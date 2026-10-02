@@ -49,7 +49,7 @@ targets exists yet. To turn one back into a working link, replace its
 - [ ] Link the Code button once the repository is public.
 - [ ] Remove the "Paper, arXiv & code will be linked here once available" tag once all three are live.
 - [ ] Fill in the BibTeX `pages`/`volume` fields once the proceedings entry exists.
-- [ ] Add author homepages for Wooseong Jeong and Kuk-Jin Yoon if they have them.
+- [ ] Add an author homepage for Kuk-Jin Yoon if he has one.
 
 ## Layout
 
