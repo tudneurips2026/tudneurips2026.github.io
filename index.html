@@ -100,6 +100,18 @@
     tr.ours { background: #fdf0e6; font-weight: 600; }
     tr.group td { background: #f3f4f6; font-weight: 600; text-align: left; }
     .table-note { font-size: 0.82rem; color: #6b7280; margin-top: -0.25rem; }
+    /* Disabled "coming soon" link buttons */
+    .link-block .button.is-coming-soon {
+      margin: 8px 4px;
+      background: #d1d5db !important;
+      color: #6b7280 !important;
+      border: none !important;
+      box-shadow: none !important;
+      cursor: not-allowed;
+      pointer-events: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
   </style>
 
   <!-- Structured Data for Academic Papers -->
@@ -159,42 +171,39 @@
 
             <div class="column has-text-centered">
               <div class="publication-links">
-                <!-- TODO: replace the three hrefs below once the paper is posted -->
-                <!-- Paper -->
+                <!-- TODO: turn these back into <a href="..."> links once the paper and code are posted -->
+                <!-- Paper (not posted yet) -->
                 <span class="link-block">
-                  <a href="https://arxiv.org/abs/XXXX.XXXXX" target="_blank"
-                  class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <i class="fas fa-file-pdf"></i>
+                  <span class="button is-normal is-rounded is-coming-soon" aria-disabled="true" title="Paper is not posted yet">
+                    <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                    </span>
+                    <span>Paper (Coming Soon)</span>
                   </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-
-              <!-- arXiv -->
-              <span class="link-block">
-                <a href="https://arxiv.org/abs/XXXX.XXXXX" target="_blank"
-                class="external-link button is-normal is-rounded is-dark">
-                <span class="icon">
-                  <i class="ai ai-arxiv"></i>
                 </span>
-                <span>arXiv</span>
-              </a>
-            </span>
 
-              <!-- Code -->
-              <span class="link-block">
-                <a href="https://github.com/tudneurips2026/TUD" target="_blank"
-                class="external-link button is-normal is-rounded is-dark">
-                <span class="icon">
-                  <i class="fab fa-github"></i>
+                <!-- arXiv (not posted yet) -->
+                <span class="link-block">
+                  <span class="button is-normal is-rounded is-coming-soon" aria-disabled="true" title="arXiv preprint is not posted yet">
+                    <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                    </span>
+                    <span>arXiv (Coming Soon)</span>
+                  </span>
                 </span>
-                <span>Code</span>
-              </a>
-            </span>
+
+                <!-- Code (not released yet) -->
+                <span class="link-block">
+                  <span class="button is-normal is-rounded is-coming-soon" aria-disabled="true" title="Code is not released yet">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code (Coming Soon)</span>
+                  </span>
+                </span>
               </div>
               <div class="has-text-centered" style="margin-top: 0.75rem;">
-                <span class="tag is-warning is-light"><i class="fas fa-hourglass-half" style="margin-right:0.35rem;"></i>Paper &amp; code links will be updated shortly</span>
+                <span class="tag is-warning is-light"><i class="fas fa-hourglass-half" style="margin-right:0.35rem;"></i>Paper, arXiv &amp; code will be linked here once available</span>
               </div>
             </div>
           </div>

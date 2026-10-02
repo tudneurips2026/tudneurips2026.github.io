@@ -39,10 +39,15 @@ sed -i 's/tudneurips2026\.github\.io/YOURNAME.github.io/g' index.html
 
 ## Before going public
 
-- [ ] Replace the two `https://arxiv.org/abs/XXXX.XXXXX` placeholders (Paper and arXiv buttons) with the real link,
-      and add matching `citation_arxiv_id` / `citation_pdf_url` meta tags.
-- [ ] Point the **Code** button at the real repository, or remove that `<span class="link-block">` until the code is released.
-- [ ] Remove the "Paper & code links will be updated shortly" tag once both links are live.
+The **Paper**, **arXiv** and **Code** buttons are currently disabled "Coming Soon" chips, since none of the three
+targets exists yet. To turn one back into a working link, replace its
+`<span class="button is-normal is-rounded is-coming-soon" ...>` with
+`<a href="..." target="_blank" class="external-link button is-normal is-rounded is-dark">`, and drop the
+"(Coming Soon)" suffix from the label.
+
+- [ ] Link the Paper and arXiv buttons, and add matching `citation_arxiv_id` / `citation_pdf_url` meta tags.
+- [ ] Link the Code button once the repository is public.
+- [ ] Remove the "Paper, arXiv & code will be linked here once available" tag once all three are live.
 - [ ] Fill in the BibTeX `pages`/`volume` fields once the proceedings entry exists.
 - [ ] Add author homepages for Wooseong Jeong and Kuk-Jin Yoon if they have them.
 
