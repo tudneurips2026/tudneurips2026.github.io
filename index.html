@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="TUD: Triggering Generalist Reasoning via Predictive Uncertainty for Dual-System VLA">
+  <meta name="description" content="TUD is an adaptive inference framework for dual-system Vision-Language-Action models. It measures the cross-step dispersion of the specialist's action re-predictions and invokes the slow generalist only when the cached plan goes stale, tracing a better cost-success trade-off than any fixed call interval.">
+  <meta name="keywords" content="vision-language-action, VLA, dual-system, robot learning, adaptive inference, predictive uncertainty, manipulation, flow matching, pi0, VLA-Arena">
+  <meta name="author" content="Hyemin Yang, Wooseong Jeong, Giwon Lee, Kuk-Jin Yoon">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="TUD Project Page">
+  <meta property="og:title" content="TUD: Triggering Generalist Reasoning via Predictive Uncertainty for Dual-System VLA">
+  <meta property="og:description" content="Deciding when to reason: TUD invokes the generalist of a dual-system VLA only when the specialist's own action re-predictions start to disagree.">
+  <meta property="og:url" content="https://tudneurips2026.github.io/">
+  <meta property="og:image" content="https://tudneurips2026.github.io/static/images/teaser.png">
+  <meta property="og:image:width" content="1920">
+  <meta property="og:image:height" content="1024">
+  <meta property="og:image:alt" content="TUD - Adaptive generalist invocation for dual-system VLA">
+  <meta property="article:published_time" content="2026-01-01T00:00:00.000Z">
+  <meta property="article:section" content="Research">
+  <meta property="article:tag" content="Vision-Language-Action Models">
+  <meta property="article:tag" content="Robot Learning">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TUD: Triggering Generalist Reasoning via Predictive Uncertainty for Dual-System VLA">
+  <meta name="twitter:description" content="Deciding when to reason: TUD invokes the generalist of a dual-system VLA only when the specialist's own action re-predictions start to disagree.">
+  <meta name="twitter:image" content="https://tudneurips2026.github.io/static/images/teaser.png">
+  <meta name="twitter:image:alt" content="TUD - Adaptive generalist invocation for dual-system VLA">
+
+  <!-- Academic/Research Specific -->
+  <meta name="citation_title" content="Triggering Generalist Reasoning via Predictive Uncertainty for Dual-System VLA">
+  <meta name="citation_author" content="Yang, Hyemin">
+  <meta name="citation_author" content="Jeong, Wooseong">
+  <meta name="citation_author" content="Lee, Giwon">
+  <meta name="citation_author" content="Yoon, Kuk-Jin">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_conference_title" content="NeurIPS 2026">
+
+  <!-- Additional SEO -->
+  <meta name="theme-color" content="#c2410c">
+  <meta name="msapplication-TileColor" content="#c2410c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://ajax.googleapis.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+  <title>TUD: Triggering Generalist Reasoning via Predictive Uncertainty for Dual-System VLA</title>
+
+  <!-- Favicon and App Icons -->
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico?v=1">
+  <link rel="icon" type="image/png" sizes="512x512" href="static/images/favicon-512.png?v=1">
+  <link rel="apple-touch-icon" href="static/images/favicon-180.png?v=1">
+
+  <!-- Critical CSS - Load synchronously -->
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css?v=3">
+
+  <!-- Non-critical CSS - Load asynchronously -->
+  <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/bulma-slider.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+  <!-- Fallback for browsers that don't support preload -->
+  <noscript>
+    <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  </noscript>
+
+  <!-- Fonts - Optimized loading -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Defer non-critical JavaScript -->
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/bulma-carousel.min.js"></script>
+  <script defer src="static/js/bulma-slider.min.js"></script>
+  <script defer src="static/js/index.js?v=3"></script>
+
+  <!-- Results table styling -->
+  <style>
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 0.75rem; }
+    .table-wrap table { font-size: 0.86rem; white-space: nowrap; }
+    .table-wrap table thead th { vertical-align: middle; text-align: center; }
+    .table-wrap table td, .table-wrap table th { text-align: center; }
+    .table-wrap table td:first-child, .table-wrap table th:first-child { text-align: left; white-space: nowrap; }
+    tr.ours { background: #fdf0e6; font-weight: 600; }
+    tr.group td { background: #f3f4f6; font-weight: 600; text-align: left; }
+    .table-note { font-size: 0.82rem; color: #6b7280; margin-top: -0.25rem; }
+  </style>
+
+  <!-- Structured Data for Academic Papers -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "Triggering Generalist Reasoning via Predictive Uncertainty for Dual-System VLA",
+    "description": "Deciding when to reason: TUD invokes the generalist of a dual-system VLA only when the specialist's own action re-predictions start to disagree.",
+    "author": [
+      { "@type": "Person", "name": "Hyemin Yang", "affiliation": { "@type": "Organization", "name": "KAIST" } },
+      { "@type": "Person", "name": "Wooseong Jeong", "affiliation": { "@type": "Organization", "name": "KAIST" } },
+      { "@type": "Person", "name": "Giwon Lee", "affiliation": { "@type": "Organization", "name": "KAIST" } },
+      { "@type": "Person", "name": "Kuk-Jin Yoon", "affiliation": { "@type": "Organization", "name": "KAIST" } }
+    ],
+    "datePublished": "2026-01-01",
+    "publisher": { "@type": "Organization", "name": "NeurIPS 2026" },
+    "url": "https://tudneurips2026.github.io/",
+    "image": "https://tudneurips2026.github.io/static/images/teaser.png",
+    "keywords": ["vision-language-action", "dual-system VLA", "adaptive inference", "predictive uncertainty", "robot manipulation"],
+    "isAccessibleForFree": true,
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "about": [
+      { "@type": "Thing", "name": "Vision-Language-Action Models" },
+      { "@type": "Thing", "name": "Robot Learning" }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <main id="main-content">
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title"><span style="color: #c2410c;">TUD</span>: Triggering Generalist Reasoning via Predictive Uncertainty for Dual-System VLA</h1>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <a href="https://hemin0806.github.io/" target="_blank">Hyemin Yang</a><sup>*</sup>,</span>
+              <span class="author-block">Wooseong Jeong<sup>*</sup>,</span>
+              <span class="author-block">
+                <a href="https://giwonlee00.github.io/" target="_blank">Giwon Lee</a><sup>*</sup>,</span>
+              <span class="author-block">Kuk-Jin Yoon</span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">KAIST<br>NeurIPS 2026</span>
+              <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <!-- TODO: replace the three hrefs below once the paper is posted -->
+                <!-- Paper -->
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/XXXX.XXXXX" target="_blank"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+
+              <!-- arXiv -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/XXXX.XXXXX" target="_blank"
+                class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                  <i class="ai ai-arxiv"></i>
+                </span>
+                <span>arXiv</span>
+              </a>
+            </span>
+
+              <!-- Code -->
+              <span class="link-block">
+                <a href="https://github.com/tudneurips2026/TUD" target="_blank"
+                class="external-link button is-normal is-rounded is-dark">
+                <span class="icon">
+                  <i class="fab fa-github"></i>
+                </span>
+                <span>Code</span>
+              </a>
+            </span>
+              </div>
+              <div class="has-text-centered" style="margin-top: 0.75rem;">
+                <span class="tag is-warning is-light"><i class="fas fa-hourglass-half" style="margin-right:0.35rem;"></i>Paper &amp; code links will be updated shortly</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+
+
+<!-- Teaser figure -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="static/images/teaser.png" alt="Overview of the TUD framework" loading="lazy"/>
+      <h2 class="subtitle has-text-centered">
+        <strong>Overview of TUD.</strong>
+        A <strong>generalist call</strong> refreshes the cached language-image context <em>h<sub>k</sub></em> at a
+        decision point; a <strong>specialist forward</strong> re-predicts an action chunk against that same cache at
+        every step. A sliding buffer of those re-predictions yields the <strong>predictive action-plan dispersion</strong>
+        <em>u<sub>t</sub></em>, and thresholding its running mean decides whether to call the generalist again or keep
+        skipping. No extra model, no phase labels &mdash; the signal falls out of forwards the architecture already runs.
+      </h2>
+    </div>
+  </div>
+</section>
+<!-- End teaser figure -->
+
+<!-- Paper video -->
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">The signal in action</h2>
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <video controls autoplay muted loop playsinline preload="metadata" style="width: 100%; border-radius: 10px;">
+            <source src="static/videos/TUD_demo.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <h2 class="subtitle has-text-centered" style="margin-top: 1rem;">
+            A VLA-Arena long-horizon rollout of <em>&ldquo;Open the top layer of the cabinet&rdquo;</em>, with the
+            predictive action-plan dispersion <em>u<sub>t</sub></em> traced alongside. The signal stays flat while the
+            cached plan still fits the scene and spikes exactly at the contact-rich moments &mdash; reaching for the
+            handle and grasping it &mdash; which is where the generalist is worth re-invoking.
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper video -->
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Dual-system Vision-Language-Action (VLA) models improve real-time robotic control by pairing a slow,
+            reasoning-capable generalist with a fast specialist action expert. However, existing methods invoke the
+            generalist at a <em>fixed frequency</em>, ignoring the fact that decision-making complexity varies throughout
+            a rollout. This static strategy wastes computation in easy phases and can delay renewed reasoning when the
+            scene changes unexpectedly.
+          </p>
+          <p>
+            We propose <strong>TUD</strong> (<strong>T</strong>riggering generalist reasoning via predictive
+            <strong>U</strong>ncertainty for <strong>D</strong>ual-system VLA), an adaptive inference framework that
+            selectively skips unnecessary generalist calls. TUD measures the cross-step dispersion of action
+            re-predictions at the upcoming chunk slot under the cached generalist context, as a predictive uncertainty
+            signal. This signal captures how much the future action plan shifts as new observations arrive and is
+            computed from forwards the architecture already runs, requiring neither manual phase labels nor an auxiliary
+            uncertainty model. On VLA-Arena, it achieves a higher success rate at matched call budgets than alternative
+            uncertainty baselines while maintaining low wall-clock overhead, and more consistently separates successful
+            from failed rollouts.
+          </p>
+          <p>
+            Also, TUD finds a more favorable cost&ndash;success trade-off than non-adaptive baselines, tracing an entire
+            operating curve as a single threshold is varied, and substantially reduces VLM calls at matched success rate.
+            The same trade-off appears in our real-robot experiments, where TUD cuts generalist calls by <strong>75%</strong>
+            relative to the strongest fixed-interval baseline while achieving an even higher success rate. Our results
+            suggest that predictive uncertainty provides a practical criterion for adaptive reasoning in efficient VLA
+            control.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
+
+<!-- Motivation -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Why a fixed call interval is never right</h2>
+        <div class="columns is-vcentered">
+          <div class="column is-half">
+            <img src="static/images/motivation_interval.png" alt="Per-task success rate of OpenHelix on CALVIN at varying generalist call interval" loading="lazy" style="width:100%;"/>
+          </div>
+          <div class="column is-half">
+            <div class="table-wrap">
+              <table class="table is-fullwidth is-bordered is-narrow">
+                <thead>
+                  <tr><th>&Delta;</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>Avg. Len. &uarr;</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>2</td><td>96.0</td><td>82.0</td><td>71.0</td><td>64.0</td><td>51.0</td><td>3.64</td></tr>
+                  <tr><td>4</td><td>92.0</td><td>79.0</td><td>65.0</td><td>60.0</td><td>53.0</td><td>3.49</td></tr>
+                  <tr><td>8</td><td>95.0</td><td>74.0</td><td>58.0</td><td>51.0</td><td>44.0</td><td>3.22</td></tr>
+                  <tr><td>12</td><td>69.0</td><td>40.0</td><td>15.0</td><td>4.0</td><td>0.0</td><td>1.28</td></tr>
+                  <tr><td>16</td><td>59.0</td><td>28.0</td><td>12.0</td><td>3.0</td><td>0.0</td><td>1.02</td></tr>
+                  <tr><td>20</td><td>47.0</td><td>20.0</td><td>8.0</td><td>0.0</td><td>0.0</td><td>0.75</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="table-note">RoboDual on CALVIN, tasks completed in a row (%), averaged over 100 rollouts per &Delta;.</p>
+          </div>
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            <strong>The optimal interval is task-dependent.</strong> Sweeping the generalist call interval &Delta; for
+            OpenHelix on CALVIN (left), contact-rich short-horizon tasks (Slider, Push, Lift) peak at
+            &Delta;<sup>&#9733;</sup>&nbsp;=&nbsp;3, while quasi-static toggling tasks (Lights) peak at
+            &Delta;<sup>&#9733;</sup>&nbsp;=&nbsp;60. No single fixed &Delta; matches both ends of that spread.
+          </p>
+          <p>
+            <strong>And stretching the interval degrades gracefully only up to a point</strong> (right): RoboDual holds up
+            to &Delta;&nbsp;=&nbsp;8 and then collapses. Scene difficulty also changes step by step <em>within</em> a
+            single rollout, so any fixed schedule wastes calls on easy phases and reacts too slowly when something
+            unexpected happens. The question existing dual-system VLAs leave unanswered is <em>when</em> to re-invoke the
+            generalist.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End motivation -->
+
+<!-- Contributions -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Contributions</h2>
+        <div class="content has-text-justified">
+          <ul>
+            <li>
+              We surface <strong>adaptive generalist calling</strong> as a central design axis of dual-system VLAs and
+              identify two preconditions missing from existing fixed-interval designs: an interval-flexible architecture
+              and a cheap online invocation signal.
+            </li>
+            <li>
+              We propose <strong>TUD</strong>, a framework that triggers the generalist via the <strong>predictive
+              action-plan dispersion</strong>, an inference-time signal computed from existing specialist forwards. A
+              simple thresholding rule turns this signal into a call-or-skip decision, and varying the threshold traces
+              an entire operating curve in the (task success rate, VLM-call budget) plane.
+            </li>
+            <li>
+              TUD finds a <strong>more favorable cost&ndash;success trade-off</strong> than non-adaptive baselines,
+              substantially reducing VLM calls at matched success rate, and the result transfers to a real SO-101 arm.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End contributions -->
+
+<!-- Method -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Method</h2>
+        <div class="content has-text-justified">
+          <p>
+            <strong>An interval-flexible dual system.</strong> We adapt the single-system flow-matching
+            <em>&pi;<sub>0</sub></em> backbone by inserting a Q-Former bridge between the vision-language module and the
+            action expert. The heavy PaliGemma VLM becomes the <em>generalist</em>; the bridge plus the flow-matching
+            action expert become the <em>specialist</em>. Because the bridge cross-attends to both the current and the
+            cached visual features, the action expert can react to the latest frame while still reading the cached
+            language-image tokens of an earlier boundary &mdash; so one cached context <em>h<sub>k</sub></em> stays
+            serviceable across a <em>range</em> of intervals instead of being pinned to the single &Delta; it was
+            trained at.
+          </p>
+          <p>
+            <strong>Predictive action-plan dispersion.</strong> At every step the specialist re-predicts the upcoming
+            action chunk against the current cache. We keep a sliding buffer of the last <em>E</em> re-predictions and
+            read the <em>same</em> upcoming chunk slot from each of them: that gives <em>E</em> alternative predictions
+            of the same future action, made at different recent times from different observations. The dispersion
+            <em>u<sub>t</sub></em> is their per-coordinate standard deviation, averaged over the executed action
+            dimensions. It stays small while the cached plan still describes the scene, and grows when the specialist
+            starts changing its mind step to step.
+          </p>
+          <p>
+            <strong>Invocation rule.</strong> Under a mild Lipschitz assumption on the specialist, the deviation between
+            the committed plan and a fresh re-prediction is bounded by a dispersion term proportional to
+            <em>u<sub>t</sub></em> plus a drift term in the observation change since the last call. The rule mirrors that
+            bound: defer the generalist while the running mean of <em>u<sub>t</sub></em> stays below a threshold
+            &theta;<sub>p</sub> and the steps since the last call have not reached a cap &Delta;<sub>max</sub>; otherwise
+            call. The threshold is adapted online as the <em>p</em>-th percentile of recently observed
+            <em>u<sub>t</sub></em>, so a single knob <em>p</em> slides the operating point along the cost&ndash;success
+            curve. We report <em>p70</em> as the representative setting.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End method -->
+
+<!-- Results: Pareto -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Cost&ndash;success trade-off</h2>
+        <div class="columns">
+          <div class="column is-half has-text-centered">
+            <img src="static/images/pareto_safety.png" alt="Cost-success trade-off on the VLA-Arena Safety domain" loading="lazy" style="width:100%;"/>
+          </div>
+          <div class="column is-half has-text-centered">
+            <img src="static/images/pareto_longhorizon.png" alt="Cost-success trade-off on the VLA-Arena Long-Horizon domain" loading="lazy" style="width:100%;"/>
+          </div>
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            Sweeping the percentile <em>p</em> traces an entire operating curve (top of each panel), while every
+            non-adaptive baseline sits at a single point (bottom). On <strong>Safety</strong>, TUD at p70 matches
+            <em>&pi;<sub>0</sub></em>'s success rate with <strong>43% fewer</strong> VLM calls. On
+            <strong>Long-Horizon</strong>, it holds a high success rate while invoking the VLM <strong>58% fewer</strong>
+            times. Since a specialist forward costs about 1/7.8 of a generalist call (13.53&nbsp;ms vs 105.91&nbsp;ms on a
+            single H200), every saved call converts near-proportionally into wall-clock savings.
+          </p>
+          <p class="has-text-grey" style="font-size: 0.9rem;">
+            We are not claiming a comprehensive SOTA comparison: different VLAs use different backbones, VLM sizes and
+            training recipes, and a stronger choice on any of those axes shifts absolute success rate. The question here
+            is orthogonal &mdash; <em>given</em> a dual-system architecture, can we trace a better trade-off between task
+            success and VLM-call budget than any non-adaptive schedule?
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Results: tables -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Results</h2>
+
+        <h3 class="title is-5">Invocation signals at matched call budgets</h3>
+        <div class="table-wrap">
+          <table class="table is-fullwidth is-bordered is-narrow">
+            <thead>
+              <tr><th>Signal</th><th>Calls / ep</th><th>SR (%) &uarr;</th><th>Wall (s) &darr;</th></tr>
+            </thead>
+            <tbody>
+              <tr class="group"><td colspan="4">High budget (&asymp;17&ndash;18 calls / ep)</td></tr>
+              <tr><td>Diff-DAgger</td><td>16.5</td><td>83.7</td><td>31.1</td></tr>
+              <tr><td>BayesDiff</td><td>16.3</td><td>83.5</td><td>11.9</td></tr>
+              <tr><td>Visual (feature cosine)</td><td>17.2</td><td>83.0</td><td><strong>5.8</strong></td></tr>
+              <tr><td>AAC-entropy</td><td>16.4</td><td>82.7</td><td>28.7</td></tr>
+              <tr><td>MC-AleaUQ</td><td>19.1</td><td>80.2</td><td>11.6</td></tr>
+              <tr><td>GenUQ</td><td>17.3</td><td>74.7</td><td>29.7</td></tr>
+              <tr class="ours"><td>TUD (Ours)</td><td>16.1</td><td>90.3</td><td>10.2</td></tr>
+              <tr class="group"><td colspan="4">Low budget (&asymp;8&ndash;10 calls / ep)</td></tr>
+              <tr><td>Diff-DAgger</td><td>8.3</td><td>80.7</td><td>31.0</td></tr>
+              <tr><td>BayesDiff</td><td>6.8</td><td>77.0</td><td>11.8</td></tr>
+              <tr><td>Visual (feature cosine)</td><td>9.3</td><td>79.8</td><td><strong>4.7</strong></td></tr>
+              <tr><td>AAC-entropy</td><td>10.1</td><td>77.2</td><td>27.7</td></tr>
+              <tr><td>MC-AleaUQ</td><td>8.3</td><td>73.5</td><td>10.8</td></tr>
+              <tr><td>GenUQ</td><td>8.9</td><td>73.8</td><td>30.4</td></tr>
+              <tr class="ours"><td>TUD (Ours)</td><td>8.7</td><td>82.0</td><td>8.9</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">
+          VLA-Arena L0. Every method uses the same invocation rule and differs <em>only</em> in the scalar signal driving
+          the call-or-skip decision. TUD wins in both budget regimes while staying cheap to compute.
+        </p>
+
+        <br>
+        <h3 class="title is-5">Real robot &mdash; SO-101 arm</h3>
+        <div class="table-wrap">
+          <table class="table is-fullwidth is-bordered is-narrow">
+            <thead>
+              <tr><th>Method</th><th>SR &uarr;</th><th>Calls / ep &darr;</th><th>Wall (s) &darr;</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Single-system &pi;<sub>0</sub></td><td>0.433</td><td>49.0</td><td>79.5</td></tr>
+              <tr><td>Fixed &Delta; = 9</td><td>0.467</td><td>48.5</td><td>76.4</td></tr>
+              <tr><td>Fixed &Delta; = 25</td><td>0.433</td><td>34.6</td><td>76.1</td></tr>
+              <tr><td>Fixed &Delta; = 50</td><td>0.400</td><td>25.9</td><td>79.2</td></tr>
+              <tr><td>TUD p50</td><td>0.767</td><td>24.5</td><td>53.4</td></tr>
+              <tr><td>TUD p70</td><td>0.733</td><td>20.8</td><td>53.5</td></tr>
+              <tr class="ours"><td>TUD p90</td><td>0.833</td><td>12.1</td><td>38.5</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">
+          30 rollouts per method (10 per task) over &ldquo;Put the pen into the white bucket&rdquo;, &ldquo;Close the
+          bottom drawer&rdquo; and &ldquo;Stack the small cube on the big cube&rdquo;; failures are charged a 120&nbsp;s
+          timeout. All three TUD operating points beat every baseline on success rate while issuing fewer generalist
+          calls than any of them. Against the strongest fixed interval (&Delta;&nbsp;=&nbsp;9), TUD p90 raises success
+          from 0.467 to 0.833 while cutting calls from 48.5 to 12.1 and wall-clock from 76.4&nbsp;s to 38.5&nbsp;s.
+          Simply stretching the fixed interval does not reach this region &mdash; going from &Delta;&nbsp;=&nbsp;9 to 50
+          saves calls but drops success from 0.467 to 0.400.
+        </p>
+
+        <br>
+        <h3 class="title is-5">Per-task success rate on VLA-Arena L0</h3>
+        <div class="table-wrap">
+          <table class="table is-fullwidth is-bordered is-narrow">
+            <thead>
+              <tr>
+                <th>Task</th><th>OpenVLA</th><th>OpenVLA-OFT</th><th>&pi;<sub>0</sub></th><th>&pi;<sub>0</sub>-FAST</th>
+                <th>UniVLA</th><th>SmolVLA</th><th>OneTwoVLA</th><th>RoboDual</th>
+                <th style="background:#fdf0e6;">TUD p70</th><th style="background:#fdf0e6;">TUD best</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="group"><td colspan="11">Safety (SR / CC)</td></tr>
+              <tr><td>StaticObstacles</td><td>0.60 / 0.0</td><td>1.00 / 0.0</td><td>0.98 / 0.0</td><td>1.00 / 0.0</td><td>0.84 / 0.0</td><td>0.14 / 0.0</td><td>0.94 / 0.0</td><td>0.68 / 0.0</td><td style="background:#fdf0e6;">0.97 / 0.0</td><td style="background:#fdf0e6;">0.99 / 0.0</td></tr>
+              <tr><td>CautiousGrasp</td><td>0.80 / 6.6</td><td>0.60 / 3.3</td><td>0.84 / 3.5</td><td>0.64 / 3.3</td><td>0.80 / 3.3</td><td>0.52 / 2.5</td><td>0.72 / 2.5</td><td>0.42 / 2.2</td><td style="background:#fdf0e6;">0.93 / 3.2</td><td style="background:#fdf0e6;">0.93 / 3.2</td></tr>
+              <tr><td>HazardAvoidance</td><td>0.20 / 17.2</td><td>0.36 / 9.4</td><td>0.74 / 6.4</td><td>0.10 / 10.4</td><td>0.70 / 5.3</td><td>0.16 / 10.4</td><td>0.56 / 6.7</td><td>0.68 / 5.3</td><td style="background:#fdf0e6;">0.85 / 5.5</td><td style="background:#fdf0e6;">0.85 / 5.5</td></tr>
+              <tr><td>StatePreservation</td><td>1.00 / 0.0</td><td>1.00 / 0.0</td><td>0.98 / 0.0</td><td>0.60 / 0.0</td><td>0.90 / 0.0</td><td>0.50 / 0.0</td><td>0.84 / 0.0</td><td>0.82 / 0.0</td><td style="background:#fdf0e6;">0.95 / 0.0</td><td style="background:#fdf0e6;">0.97 / 0.0</td></tr>
+              <tr><td>DynamicObstacles</td><td>0.60 / 3.6</td><td>0.80 / 8.8</td><td>0.92 / 6.0</td><td>0.80 / 3.6</td><td>0.26 / 7.1</td><td>0.32 / 2.1</td><td>0.76 / 6.6</td><td>0.32 / 3.0</td><td style="background:#fdf0e6;">0.89 / 7.9</td><td style="background:#fdf0e6;">0.93 / 7.0</td></tr>
+              <tr class="group"><td colspan="11">Distractor (SR)</td></tr>
+              <tr><td>StaticDistractors</td><td>0.80</td><td>1.00</td><td>0.92</td><td>1.00</td><td>1.00</td><td>0.54</td><td>0.96</td><td>0.64</td><td style="background:#fdf0e6;">0.99</td><td style="background:#fdf0e6;">0.99</td></tr>
+              <tr><td>DynamicDistractors</td><td>0.60</td><td>1.00</td><td>0.78</td><td>0.80</td><td>0.78</td><td>0.42</td><td>0.94</td><td>0.52</td><td style="background:#fdf0e6;">0.90</td><td style="background:#fdf0e6;">0.97</td></tr>
+              <tr class="group"><td colspan="11">Extrapolation (SR)</td></tr>
+              <tr><td>PrepositionCombinations</td><td>0.68</td><td>0.62</td><td>0.76</td><td>0.14</td><td>0.50</td><td>0.20</td><td>0.64</td><td>0.20</td><td style="background:#fdf0e6;">0.71</td><td style="background:#fdf0e6;">0.81</td></tr>
+              <tr><td>TaskWorkflows</td><td>0.82</td><td>0.74</td><td>0.72</td><td>0.24</td><td>0.76</td><td>0.32</td><td>0.48</td><td>0.42</td><td style="background:#fdf0e6;">0.52</td><td style="background:#fdf0e6;">0.66</td></tr>
+              <tr><td>UnseenObjects</td><td>0.80</td><td>0.60</td><td>0.80</td><td>0.00</td><td>0.34</td><td>0.16</td><td>0.58</td><td>0.30</td><td style="background:#fdf0e6;">0.86</td><td style="background:#fdf0e6;">0.86</td></tr>
+              <tr class="group"><td colspan="11">Long Horizon (SR)</td></tr>
+              <tr><td>LongHorizon</td><td>0.80</td><td>0.80</td><td>0.92</td><td>0.62</td><td>0.66</td><td>0.74</td><td>0.90</td><td>0.77</td><td style="background:#fdf0e6;">0.97</td><td style="background:#fdf0e6;">0.99</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">
+          SR: success rate. CC: cumulative cost. <em>p70</em> is our single representative operating point;
+          <em>best</em> reports TUD at whichever <em>p</em> is best for each individual task.
+        </p>
+
+        <br>
+        <div class="content has-text-justified">
+          <p>
+            <strong>Setup.</strong> Flow-matching <em>&pi;<sub>0</sub></em> backbone with a Q-Former bridge, fine-tuned
+            from the released <em>&pi;<sub>0</sub></em> checkpoint for 30,000 steps with batch size 32 on
+            4&times;NVIDIA&nbsp;H200. Action chunks have horizon <em>C</em>&nbsp;=&nbsp;50 with
+            <em>d<sub>a</sub></em>&nbsp;=&nbsp;7 executed dimensions. Real-robot training uses a single H200 and
+            evaluation a single TITAN RTX, with 100 teleoperated demonstrations per task.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End results -->
+
+<!-- Analysis carousel -->
+<section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title is-3 has-text-centered">Signal Validation</h2>
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item">
+          <img src="static/images/uncertainty_compare.png" alt="Uncertainty signals on success versus failure rollouts" loading="lazy"/>
+          <h2 class="subtitle has-text-centered">
+            Uncertainty signals over the final 80 steps of a rollout, split by successful (green) and failed (red)
+            episodes and z-normalized per method. Only <em>u<sub>t</sub></em> shows a consistent gap between success and
+            failure across all four VLA-Arena domains.
+          </h2>
+        </div>
+        <div class="item">
+          <img src="static/images/scenario_longhorizon.png" alt="Tracking the dispersion within a long-horizon rollout" loading="lazy"/>
+          <h2 class="subtitle has-text-centered">
+            Tracking <em>u<sub>t</sub></em> within a long-horizon rollout of &ldquo;Open the top layer of the
+            cabinet&rdquo;. The peaks line up with reaching for and grasping the handle, the two moments where the
+            cached plan genuinely needs revisiting.
+          </h2>
+        </div>
+        <div class="item">
+          <img src="static/images/scenario_safety.png" alt="Tracking the dispersion within a safety rollout" loading="lazy"/>
+          <h2 class="subtitle has-text-centered">
+            The same trace for &ldquo;Pick up the scissors and place it on the top of the cabinet&rdquo;. The signal is
+            quiet during transport and spikes at hover and grasp &mdash; it tracks within-rollout difficulty rather than
+            elapsed time.
+          </h2>
+        </div>
+        <div class="item">
+          <img src="static/images/pareto_distractor.png" alt="Cost-success trade-off on the Distractor domain" loading="lazy"/>
+          <h2 class="subtitle has-text-centered">
+            Cost&ndash;success trade-off on the Distractor domain of VLA-Arena L0.
+          </h2>
+        </div>
+        <div class="item">
+          <img src="static/images/pareto_extrapolation.png" alt="Cost-success trade-off on the Extrapolation domain" loading="lazy"/>
+          <h2 class="subtitle has-text-centered">
+            Cost&ndash;success trade-off on the Extrapolation domain of VLA-Arena L0.
+          </h2>
+        </div>
+        <div class="item">
+          <img src="static/images/robot_setup.jpg" alt="Real robot setup with an SO-101 arm and two RGB cameras" loading="lazy"/>
+          <h2 class="subtitle has-text-centered">
+            Real-robot platform: a 6-DoF SO-101 single arm with two RGB cameras providing third-person and gripper views.
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End analysis carousel -->
+
+<!--BibTex citation -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <div class="bibtex-header">
+        <h2 class="title" style="margin-bottom: 0;">BibTeX</h2>
+        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX">
+          <i class="fas fa-copy"></i><span class="copy-text">Copy</span>
+        </button>
+      </div>
+      <pre><code id="bibtex-code">@inproceedings{yang2026tud,
+  title={Triggering Generalist Reasoning via Predictive Uncertainty for Dual-System VLA},
+  author={Hyemin Yang and Wooseong Jeong and Giwon Lee and Kuk-Jin Yoon},
+  booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
+  year={2026}
+}</code></pre>
+    </div>
+</section>
+<!--End BibTex citation -->
+
+<!-- Related Work -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Our Related Work</h2>
+        <div class="content has-text-justified">
+          <p>
+            <a href="https://vips2026.github.io/" target="_blank"><strong>VIPS: Vehicle-Infrastructure Cooperative Planning Benchmark via Pseudo-Simulation</strong></a>
+            (ECCV 2026, Spotlight). Hoonhee Cho<sup>*</sup>, Jae-Young Kang<sup>*</sup>, Giwon Lee<sup>*</sup>, Hyemin Yang<sup>*</sup>, Heejun Park<sup>*</sup>, Kuk-Jin Yoon<sup>&dagger;</sup>.
+            A benchmark for cooperative V2I autonomous driving via pseudo-simulation, together with CoS-V2X, a sparse cooperative planning framework.
+            [<a href="https://vips2026.github.io/" target="_blank">Project</a>]
+            [<a href="https://arxiv.org/abs/2609.02462" target="_blank">arXiv</a>]
+            [<a href="https://github.com/mickeykang16/VIPS" target="_blank">Code</a>]
+          </p>
+          <p>
+            <a href="https://heat2026.github.io/" target="_blank"><strong>HEAT: Heterogeneous End-to-End Autonomous Driving via Trajectory-Guided World Models</strong></a>
+            (arXiv 2026). Hoonhee Cho<sup>*</sup>, Giwon Lee<sup>*</sup>, Jae-Young Kang<sup>*</sup>, Hyemin Yang<sup>*</sup>, Heejun Park<sup>*</sup>, Kuk-Jin Yoon<sup>&dagger;</sup>.
+            A trajectory-driven learning paradigm with a world model that captures domain-invariant driving intent, enabling a single unified end-to-end model to perform robustly across heterogeneous domains.
+            [<a href="https://heat2026.github.io/" target="_blank">Project</a>]
+            [<a href="https://arxiv.org/abs/2605.19631" target="_blank">arXiv</a>]
+          </p>
+          <p>
+            <a href="https://vrdriveneurips.github.io/" target="_blank"><strong>VR-Drive: Viewpoint-Robust End-to-End Driving with Feed-Forward 3D Gaussian Splatting</strong></a>
+            (NeurIPS 2025). Hoonhee Cho<sup>*</sup>, Jae-Young Kang<sup>*</sup>, Giwon Lee<sup>*</sup>, Hyemin Yang<sup>*</sup>, Heejun Park, Seokwoo Jung, Kuk-Jin Yoon.
+            A viewpoint-robust end-to-end driving framework that leverages feed-forward 3D Gaussian Splatting to synthesize novel views for robust planning.
+            [<a href="https://vrdriveneurips.github.io/" target="_blank">Project</a>]
+            [<a href="https://arxiv.org/abs/2510.23205" target="_blank">arXiv</a>]
+            [<a href="https://github.com/mickeykang16/VR-Drive" target="_blank">Code</a>]
+          </p>
+          <p class="has-text-grey" style="font-size: 0.85rem;">
+            <sup>*</sup>Equal Contribution&nbsp;&nbsp;&nbsp;<sup>&dagger;</sup>Corresponding Author
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Related Work -->
+
+  <footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+            You are free to borrow the source code of this website, we just ask that you link back to this page in the footer. <br> This website is licensed under a <a rel="license"  href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </main>
+  </body>
+  </html>
